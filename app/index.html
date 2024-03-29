@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Title</title>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=RocknRoll+One&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/style.min.css">
+</head>
+<body>
+
+  <style>
+
+.wheel-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+}
+
+.wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  transform-origin: center;
+  border-radius: 50%;
+  overflow: hidden;
+
+}
+.wheel-container:after {
+  content: url('../img/center.svg');
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  z-index: 5;
+}
+.wheel-container:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  display: block;
+  z-index: 2;
+}
+.sector {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(50% 50%, 115% 0, 100% 100%);
+  background-color: #00BB88;
+  
+}
+
+/* Определите цвета для каждого сектора */
+.sector-1 {
+  background-color: #FF2244; /* Красный */
+  transform: rotate(0deg);
+  color: #911327
+}
+.sector-2 {
+  background-color: #FFCC44; /* Желтый */
+  transform: rotate(72deg);
+  color: #917427;
+}
+.sector-3 {
+  background-color: #04C1CD; /* Голубой */
+  transform: rotate(144deg);
+  color: #025C62;
+}
+.sector-4 {
+  background-color: #00BB88; /* Зеленый */
+  transform: rotate(216deg);
+  color: #006A4D;
+}
+.sector-5 {
+  background-color: #BB33EE; /* Фиолетовый */
+  transform: rotate(288deg);
+  color: #6A1D87;
+}
+
+.button {
+  display: block;
+  margin: 20px auto;
+  padding: 15px 20px;
+  font-size: 18px;
+  background-color: #017df8;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border-radius: 50px;
+  font-weight: 600;
+  margin-top: 40px;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.prize-screen {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+
+  text-align: center;
+}
+.prize-screen {
+  z-index: 99;
+  transition: all 1s;
+}
+
+.prize-screen h2 {
+  color: #4caf50;
+}
+
+.confetti {
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+.prize-screen button {
+  display: block;
+  margin: 20px auto;
+}
+
+.wheel.slow-spin {
+  animation: spin 5s linear forwards; /* Анимация вращения колеса длится 5 секунд */
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(3600deg); /* Окончательный угол вращения */
+  }
+}
+.sector {
+    font-size: 18px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    text-align: right;
+    padding: 15px;
+    box-sizing: border-box;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+.sector span {
+  /* transform: rotate(90deg); */
+}
+.prize-screen .button {
+  margin-bottom: 0;
+}
+
+.prize-screen::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Затемненный оверлей */
+  z-index: 98; /* Ниже модального окна */
+  display: none; /* По умолчанию скрыт */
+}
+
+.prize-screen.show-overlay::before {
+  display: block; /* Показываем оверлей */
+}
+  </style>
+
+
+<body>
+  <div class="content">
+    <div class="wrapper">
+       <h1>SPIN THE WHEEL</h1>
+    <div class="wheel-container">
+      <div class="wheel">
+        <div class="sector sector-1">
+          <span>
+            Prize 1
+          </span>
+          </div>
+        <div class="sector sector-2">
+          <span>Prize 2</span>
+          </div>
+        <div class="sector sector-3">
+          <span>
+            Prize 3
+          </span>
+          </div>
+        <div class="sector sector-4">
+          <span>Prize 4</span>
+          </div>
+        <div class="sector sector-5"><span>Prize 5</span></div>
+      </div>
+    </div>
+    <button id="spin" class="button">PRESS HERE</button>
+    </div>
+   
+  </div>
+  
+  <div class="prize-screen" id="prize-modal">
+    <div class="modal-content">
+       <h2>CONGRATULATIONS!</h2>
+    <div class="confetti">🎉</div>
+    <p>You got <span id="prize-name"></span></p>
+    <button id="done" class="button">DONE</button>
+    </div>
+   
+  </div>
+
+  
+</body>
+
+
+
+		
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+	
+
+	<script src="js/main.js"></script>
+  <script>
+document.getElementById("spin").addEventListener("click", function() {
+  if (!this.disabled) {
+    this.disabled = true;
+    var totalRotations = 5; // Количество оборотов колеса
+    var degrees = Math.floor(Math.random() * 360);
+    var selectedSector = Math.floor(degrees / 72);
+    var sectorAngle = selectedSector * 72;
+    var wheel = document.querySelector(".wheel");
+
+    // Определяем угол поворота колеса, чтобы выигрышный сектор был вверху
+    var reverseDegrees = 360 * totalRotations - (degrees + 36); // Умножаем на количество оборотов
+
+    wheel.style.transition = "transform 5s ease-in-out"; // Добавляем плавную анимацию вращения
+    wheel.style.transform = "rotate(" + reverseDegrees + "deg)"; // Поворачиваем колесо в обратном направлении
+
+    setTimeout(function() {
+      document.getElementById("spin").disabled = false;
+      wheel.style.transition = "none"; // Удаляем временное свойство transition
+
+      // Получаем текст из выбранного сектора
+      var prizeText = document.querySelector(".sector.sector-" + (selectedSector + 1)).textContent;
+
+      // Отображаем результат после завершения анимации вращения колеса
+      setTimeout(function() {
+        document.getElementById("prize-name").textContent = prizeText;
+        
+        document.getElementById("prize-modal").style.display = "block"; // Показываем модальное окно
+      }, 1000); // Длительность анимации вращения колеса
+    }, 5000); // Общая длительность анимации (5 секунд * количество оборотов)
+  }
+});
+
+
+document.getElementById("done").addEventListener("click", function() {
+  document.getElementById("prize-modal").style.display = "none"; // Скрываем модальное окно
+  document.getElementById("spin").disabled = false; // Разрешаем вращение колеса
+  document.querySelector(".wheel").style.transform = "none"; // Сбрасываем поворот колеса
+  
+});
+
+
+
+
+
+
+  </script>
+
+	
+</body>
+</html>
