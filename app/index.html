@@ -12,90 +12,131 @@
   <link rel="stylesheet" href="css/style.min.css">
 </head>
 
-  <body>
-    <!-- start content -->
-    <div class="content">
-      <div class="wrapper">
-      
-        <h1>SPIN THE WHEEL</h1>
-        <div class="wheel-container">
-          <div class="wheel">
-            <div class="sector sector-1">
-              <span>
-                Prize 1
-              </span>
+<body>
+  <!-- start content -->
+  <div class="content">
+    <div class="wrapper">
+    
+      <h1>SPIN THE WHEEL</h1>
+      <div class="prize-title" id="prize-title">
+        Prize 5
+      </div>
+      <div class="wheel-container">
+        
+        
+        <div class="wheel">
+          <div class="wheel-wrap">
+            <div class="sec sec-1">
+              
             </div>
-            <div class="sector sector-2">
-              <span>Prize 2</span>
+            <div class="sec sec-2">
+             
             </div>
-            <div class="sector sector-3">
-              <span>
-                Prize 3
-              </span>
+            <div class="sec sec-3">
+              
             </div>
-            <div class="sector sector-4">
-              <span>Prize 4</span>
+            <div class="sec sec-4">
+             
             </div>
-            <div class="sector sector-5"><span>Prize 5</span></div>
+            <div class="sec sec-5"></div>
           </div>
+          <div class="sector sector-1">
+            <span>
+              Prize 1
+            </span>
+          </div>
+          <div class="sector sector-2">
+            <span>Prize 2</span>
+          </div>
+          <div class="sector sector-3">
+            <span>
+              Prize 3
+            </span>
+          </div>
+          <div class="sector sector-4">
+            <span>Prize 4</span>
+          </div>
+          <div class="sector sector-5"><span>Prize 5</span></div>
         </div>
-        <button id="spin" class="button">PRESS HERE</button>
       </div>
+      <button id="spin" class="button">PRESS HERE</button>
     </div>
-    <!-- end content -->
+  </div>
+  <!-- end content -->
 
-    <!-- start modal -->
-    <div class="prize-screen" id="prize-modal">
-      <div class="modal-content">
-        <h2>CONGRATULATIONS!</h2>
-        <div class="confetti">🎉</div>
-        <p>You got <span id="prize-name"></span></p>
-        <button id="done" class="button">DONE</button>
-      </div>
+  <!-- start modal -->
+  <div class="prize-screen" id="prize-modal">
+    <div class="modal-content">
+      <h2>CONGRATULATIONS!</h2>
+      <div class="confetti">🎉</div>
+      <p>You got <span id="prize-name"></span></p>
+      <button id="done" class="button">DONE</button>
     </div>
-    <!-- end modal -->
-  </body>
+  </div>
+  <!-- end modal -->
+</body>
 
 
-  <script>
-    document.getElementById("spin").addEventListener("click", function () {
-      if (!this.disabled) {
-        this.disabled = true;
-        var totalRotations = 5; // Number of wheel rotations
-        var degrees = Math.floor(Math.random() * 360);
-        var selectedSector = Math.floor(degrees / 72);
-        var sectorAngle = selectedSector * 72;
-        var wheel = document.querySelector(".wheel");
+<script>
+// Winning option specified by a variable
+var winningOption = 3; // This means that the winning option is "Prize 3"
 
-        // Determine the wheel rotation angle to make the winning sector on top
-        var reverseDegrees = 360 * totalRotations - (degrees + 36); // Multiply by the number of rotations
+document.getElementById("spin").addEventListener("click", function () {
+  if (!this.disabled) {
+    this.disabled = true;
+    var totalRotations = 25; // Number of wheel rotations
+    // We use the specified winning option instead of a random number
+    var selectedSector = winningOption - 1;
+    var sectorAngle = selectedSector * 72;
+    var wheel = document.querySelector(".wheel");
 
-        wheel.style.transition = "transform 5s ease-in-out"; // Add smooth wheel rotation animation
-        wheel.style.transform = "rotate(" + reverseDegrees + "deg)"; // Rotate the wheel in the opposite direction
+    // Determine the wheel rotation angle to make the winning sector on top
+    var reverseDegrees = 360 * totalRotations - (sectorAngle + 85); // Multiply by the number of rotations
 
-        setTimeout(function () {
-          document.getElementById("spin").disabled = false;
-          wheel.style.transition = "none"; // Remove temporary transition property
+    // Set initial transform value
+    wheel.style.transform = "rotate(0deg)";
+    //cubic-bezier(0.17, 0.67, 0.83, 0.67)
+    // Apply transition property to enable animation
+    wheel.style.transition = "transform 10s cubic-bezier(0.25, 0.1, 0.25, 1)";
 
-          // Get the text from the selected sector
-          var prizeText = document.querySelector(".sector.sector-" + (selectedSector + 1)).textContent;
+    // Set final transform value
+    setTimeout(function() {
+        wheel.style.transform = "rotate(" + reverseDegrees + "deg)";
+    }, 0); // Не устанавливаем задержку, а просто помещаем это в очередь выполнения событий
 
-          // Display the result after the wheel rotation animation ends
-          setTimeout(function () {
-            document.getElementById("prize-name").textContent = prizeText;
 
-            document.getElementById("prize-modal").style.display = "block"; // Show the modal window
-          }, 1000); // Duration of wheel rotation animation
-        }, 5000); // Total animation duration (5 seconds * number of rotations)
-      }
+
+    // Event listener to remove transition property after animation finishes
+    wheel.addEventListener("transitionend", function transitionEndHandler() {
+      wheel.removeEventListener("transitionend", transitionEndHandler); // Remove the event listener
+      document.getElementById("spin").disabled = false;
+      wheel.style.transition = "none"; // Remove temporary transition property
+
+      // Get the text from the selected sector
+      var prizeText = document.querySelector(".sector.sector-" + (selectedSector + 1)).textContent;
+
+      // Display the result after the wheel rotation animation ends
+      setTimeout(function () {
+        document.getElementById("prize-name").textContent = prizeText;
+      
+
+// Output winningOption value to prize-title div
+
+
+        document.getElementById("prize-modal").style.display = "block"; // Show the modal window
+      }, 1000); // Duration of wheel rotation animation
+      document.getElementById("prize-title").textContent = "Prize " + winningOption;
     });
-    document.getElementById("done").addEventListener("click", function () {
-      document.getElementById("prize-modal").style.display = "none"; // Hide the modal window
-      document.getElementById("spin").disabled = false; // Enable wheel rotation
-      document.querySelector(".wheel").style.transform = "none"; // Reset wheel rotation
+  }
+});
 
-    });
-  </script>
+document.getElementById("done").addEventListener("click", function () {
+  document.getElementById("prize-modal").style.display = "none"; // Hide the modal window
+  document.getElementById("spin").disabled = false; // Enable wheel rotation
+  document.querySelector(".wheel").style.transform = "none"; // Reset wheel rotation
+});
+
+</script>
 </body>
 
 </html>
