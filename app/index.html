@@ -11,12 +11,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="css/style.min.css">
 </head>
-<style>
-  /* CSS для изменения цвета фона */
-  body.modal-open {
-    /* background-color: red;  */
-  }
-</style>
+
 
 <body>
   <!-- start content -->
@@ -80,79 +75,92 @@
     </div>
   </div>
   <!-- end modal -->
+  <video id="video" autoplay controls>
+    <source src="audio/voice.m4a" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 </body>
-
-
 <script>
-  // Winning option specified by a variable
-  var winningOption = 3; // This means that the winning option is "Prize 3"
+// Winning option specified by a variable
+var winningOption = 3; // This means that the winning option is "Prize 3"
 
-  document.getElementById("spin").addEventListener("click", function () {
-    if (!this.disabled) {
-      this.disabled = true;
-      var totalRotations = 25; // Number of wheel rotations
-      // We use the specified winning option instead of a random number
-      var selectedSector = winningOption - 1;
-      var sectorAngle = selectedSector * 72;
-      var wheel = document.querySelector(".wheel");
+// Получаем элемент видео
+var video = document.getElementById("video");
 
-      // Determine the wheel rotation angle to make the winning sector on top
-      var reverseDegrees = 360 * totalRotations - (sectorAngle + 85); // Multiply by the number of rotations
+document.getElementById("spin").addEventListener("click", function () {
+  if (!this.disabled) {
+    this.disabled = true;
+    var totalRotations = 25; // Number of wheel rotations
+    // We use the specified winning option instead of a random number
+    var selectedSector = winningOption - 1;
+    var sectorAngle = selectedSector * 72;
+    var wheel = document.querySelector(".wheel");
 
-      // Set initial transform value
-      wheel.style.transform = "rotate(0deg)";
-      // Apply transition property to enable animation
-      wheel.style.transition = "transform 10s cubic-bezier(0.25, 0.1, 0.25, 1)";
+    // Determine the wheel rotation angle to make the winning sector on top
+    var reverseDegrees = 360 * totalRotations - (sectorAngle + 85); // Multiply by the number of rotations
 
-      // Set final transform value
-      setTimeout(function() {
-          wheel.style.transform = "rotate(" + reverseDegrees + "deg)";
-      }, 0); // Не устанавливаем задержку, а просто помещаем это в очередь выполнения событий
+    // Set initial transform value
+    wheel.style.transform = "rotate(0deg)";
+    // Apply transition property to enable animation
+    wheel.style.transition = "transform 12s cubic-bezier(0.25, 0.1, 0.25, 1)";
 
-      // Animation for changing prize title during wheel spinning
-      var prizeTitleAnimationInterval = setInterval(function() {
-        var currentPrize = parseInt(document.getElementById("prize-title").textContent.match(/\d+/));
-        var nextPrize = (currentPrize % 5) + 1;
-        document.getElementById("prize-title").textContent = "Prize " + nextPrize;
-      }, 100); // Interval for changing prize title text
+    // Set final transform value
+    setTimeout(function() {
+        wheel.style.transform = "rotate(" + reverseDegrees + "deg)";
+    }, 0); // Не устанавливаем задержку, а просто помещаем это в очередь выполнения событий
 
-      // Event listener to remove transition property after animation finishes
-      wheel.addEventListener("transitionend", function transitionEndHandler() {
-        wheel.removeEventListener("transitionend", transitionEndHandler); // Remove the event listener
-        document.getElementById("spin").disabled = false;
-        wheel.style.transition = "none"; // Remove temporary transition property
+    // Воспроизводим видео по клику на кнопку
+    video.play();
 
-        // Get the text from the selected sector
-        var prizeText = document.querySelector(".sector.sector-" + (selectedSector + 1)).textContent;
+    // Animation for changing prize title during wheel spinning
+    var prizeTitleAnimationInterval = setInterval(function() {
+      var currentPrize = parseInt(document.getElementById("prize-title").textContent.match(/\d+/));
+      var nextPrize = (currentPrize % 5) + 1;
+      document.getElementById("prize-title").textContent = "Prize " + nextPrize;
+    }, 100); // Interval for changing prize title text
 
-        // Display the result after the wheel rotation animation ends
-        setTimeout(function () {
-          document.getElementById("prize-name").textContent = prizeText;
-          document.getElementById("prize-modal").style.display = "block"; // Show the modal window
-          document.body.classList.add("modal-open"); // Добавляем класс для изменения цвета фона body
-        }, 1000); // Duration of wheel rotation animation minus 5 seconds
-        document.getElementById("prize-title").textContent = "Prize " + winningOption;
+    // Event listener to remove transition property after animation finishes
+    wheel.addEventListener("transitionend", function transitionEndHandler() {
+      wheel.removeEventListener("transitionend", transitionEndHandler); // Remove the event listener
+      document.getElementById("spin").disabled = false;
+      wheel.style.transition = "none"; // Remove temporary transition property
 
-        // Stop the prize title animation
-        clearInterval(prizeTitleAnimationInterval);
-      });
+      // Get the text from the selected sector
+      var prizeText = document.querySelector(".sector.sector-" + (selectedSector + 1)).textContent;
+      setTimeout(function () {
+        document.body.style.backgroundColor = "#9ED7FD";// Show the modal window
+        document.getElementById("prize-title").style.color = "#fff";
+      }, 100); 
+      // Display the result after the wheel rotation animation ends
+      setTimeout(function () {
+        document.getElementById("prize-name").textContent = prizeText;
+        document.getElementById("prize-modal").style.display = "block"; // Show the modal window
+      }, 2500); // Duration of wheel rotation animation minus 5 seconds
+      document.getElementById("prize-title").textContent = "Prize " + winningOption;
 
-      // Stop the prize title animation 5 seconds before the end of the wheel rotation
-      setTimeout(function() {
-        clearInterval(prizeTitleAnimationInterval);
-      }, (totalRotations * 10000) - 5000);
-    }
-  });
+      // Stop the prize title animation
+      clearInterval(prizeTitleAnimationInterval);
 
-  document.getElementById("done").addEventListener("click", function () {
-    document.getElementById("prize-modal").style.display = "none"; // Hide the modal window
-    document.getElementById("spin").disabled = false; // Enable wheel rotation
-    document.querySelector(".wheel").style.transform = "none"; // Reset wheel rotation
-    document.body.classList.remove("modal-open"); // Убираем класс для изменения цвета фона body
-  });
+      // Скрываем видео после завершения воспроизведения
+      video.style.display = "none";
+    });
+
+    // Stop the prize title animation 5 seconds before the end of the wheel rotation
+    setTimeout(function() {
+      clearInterval(prizeTitleAnimationInterval);
+    }, (totalRotations * 12000) - 4000);
+  }
+});
+
+document.getElementById("done").addEventListener("click", function () {
+  document.getElementById("prize-modal").style.display = "none"; // Hide the modal window
+  document.getElementById("spin").disabled = false; // Enable wheel rotation
+  document.querySelector(".wheel").style.transform = "none"; // Reset wheel rotation
+  document.body.style.backgroundColor = "transparent";// Show the modal window
+        document.getElementById("prize-title").style.color = "#b7b5b8";
+});
+
 </script>
-  
-  
   
   
   
