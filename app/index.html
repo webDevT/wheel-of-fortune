@@ -75,92 +75,90 @@
     </div>
   </div>
   <!-- end modal -->
-  <video id="video" autoplay controls>
-    <source src="audio/voice.m4a" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+  <audio id="audio" src="audio/voice.mp3" type="audio/mp3"></audio>
+  <audio id="winAudio" src="audio/win.mp3" type="audio/mp3"></audio>
+
 </body>
 <script>
-// Winning option specified by a variable
-var winningOption = 3; // This means that the winning option is "Prize 3"
+document.addEventListener('DOMContentLoaded', () => {
+  const spinButton = document.getElementById("spin");
+  const wheel = document.querySelector(".wheel");
+  const prizeTitle = document.getElementById("prize-title");
+  const audio = document.getElementById("audio");
+  const winAudio = document.getElementById("winAudio");
+  let isSpinning = false;
+  const totalSectors = 5;
+  const winningOption = 3;
+  const doneButton = document.getElementById("done"); // Get the DONE button
 
-// Получаем элемент видео
-var video = document.getElementById("video");
+  doneButton.addEventListener('click', () => {
+    const prizeModal = document.getElementById("prize-modal"); // Make sure the ID of your modal window is "prize-modal"
+    prizeModal.style.display = "none"; // Hide the modal window
+    document.body.style.backgroundColor = ""; // Reset the body background color
+  });
 
-document.getElementById("spin").addEventListener("click", function () {
-  if (!this.disabled) {
-    this.disabled = true;
-    var totalRotations = 25; // Number of wheel rotations
-    // We use the specified winning option instead of a random number
-    var selectedSector = winningOption - 1;
-    var sectorAngle = selectedSector * 72;
-    var wheel = document.querySelector(".wheel");
+  const startSpin = () => {
+    if (isSpinning) return;
+    isSpinning = true;
+    spinButton.disabled = true;
 
-    // Determine the wheel rotation angle to make the winning sector on top
-    var reverseDegrees = 360 * totalRotations - (sectorAngle + 85); // Multiply by the number of rotations
+    const totalRotations = 5;
+    const finalRotationDegrees = 360 * totalRotations + (360 - ((winningOption - 1) * (360 / totalSectors)) - 72);
+    const spinDuration = 12000;
+    const startTime = Date.now();
 
-    // Set initial transform value
-    wheel.style.transform = "rotate(0deg)";
-    // Apply transition property to enable animation
-    wheel.style.transition = "transform 12s cubic-bezier(0.25, 0.1, 0.25, 1)";
+    const animate = () => {
+      const elapsedTime = Date.now() - startTime;
+      const progress = elapsedTime / spinDuration;
+      const easedProgress = easeOutCubic(progress);
+      const currentRotation = finalRotationDegrees * easedProgress;
 
-    // Set final transform value
-    setTimeout(function() {
-        wheel.style.transform = "rotate(" + reverseDegrees + "deg)";
-    }, 0); // Не устанавливаем задержку, а просто помещаем это в очередь выполнения событий
+      wheel.style.transform = `rotate(${currentRotation % 360}deg)`;
+      updatePrizeTitleDuringSpin(currentRotation);
 
-    // Воспроизводим видео по клику на кнопку
-    video.play();
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        onFinish();
+      }
+    };
 
-    // Animation for changing prize title during wheel spinning
-    var prizeTitleAnimationInterval = setInterval(function() {
-      var currentPrize = parseInt(document.getElementById("prize-title").textContent.match(/\d+/));
-      var nextPrize = (currentPrize % 5) + 1;
-      document.getElementById("prize-title").textContent = "Prize " + nextPrize;
-    }, 100); // Interval for changing prize title text
+    const updatePrizeTitleDuringSpin = (rotation) => {
+      const newSectorIndex = (Math.floor((360 - (rotation % 360)) / (360 / totalSectors)) + 1) % totalSectors || totalSectors;
+      if (prizeTitle.textContent !== `Prize ${newSectorIndex}`) {
+        audio.currentTime = 0; // Reset the audio to the start
+        audio.play(); // Play the click sound
+        prizeTitle.textContent = `Prize ${newSectorIndex}`; // Update the text only if it has changed
+      }
+    };
 
-    // Event listener to remove transition property after animation finishes
-    wheel.addEventListener("transitionend", function transitionEndHandler() {
-      wheel.removeEventListener("transitionend", transitionEndHandler); // Remove the event listener
-      document.getElementById("spin").disabled = false;
-      wheel.style.transition = "none"; // Remove temporary transition property
+    const onFinish = () => {
+      isSpinning = false;
+      spinButton.disabled = false;
+      document.body.style.backgroundColor = "#D1FFFC";
 
-      // Get the text from the selected sector
-      var prizeText = document.querySelector(".sector.sector-" + (selectedSector + 1)).textContent;
-      setTimeout(function () {
-        document.body.style.backgroundColor = "#9ED7FD";// Show the modal window
-        document.getElementById("prize-title").style.color = "#fff";
-      }, 100); 
-      // Display the result after the wheel rotation animation ends
-      setTimeout(function () {
-        document.getElementById("prize-name").textContent = prizeText;
-        document.getElementById("prize-modal").style.display = "block"; // Show the modal window
-      }, 2500); // Duration of wheel rotation animation minus 5 seconds
-      document.getElementById("prize-title").textContent = "Prize " + winningOption;
+      setTimeout(() => {
+        const prizeModal = document.getElementById("prize-modal");
+        const prizeName = document.getElementById("prize-name");
+        prizeName.textContent = `Prize ${winningOption}`; // Set the winning prize in the modal text field
+        prizeModal.style.display = "block"; // Show the modal window
+        winAudio.play(); // Play the winning audio
+      }, 2000); // Delay for the modal appearance and audio play
+    };
 
-      // Stop the prize title animation
-      clearInterval(prizeTitleAnimationInterval);
+    requestAnimationFrame(animate);
+  };
 
-      // Скрываем видео после завершения воспроизведения
-      video.style.display = "none";
-    });
-
-    // Stop the prize title animation 5 seconds before the end of the wheel rotation
-    setTimeout(function() {
-      clearInterval(prizeTitleAnimationInterval);
-    }, (totalRotations * 12000) - 4000);
+  // Easing function
+  function easeOutCubic(x) {
+    return 1 - Math.pow(1 - x, 3);
   }
+
+  spinButton.addEventListener('click', startSpin);
 });
 
-document.getElementById("done").addEventListener("click", function () {
-  document.getElementById("prize-modal").style.display = "none"; // Hide the modal window
-  document.getElementById("spin").disabled = false; // Enable wheel rotation
-  document.querySelector(".wheel").style.transform = "none"; // Reset wheel rotation
-  document.body.style.backgroundColor = "transparent";// Show the modal window
-        document.getElementById("prize-title").style.color = "#b7b5b8";
-});
-
-</script>
+  </script>
+  
   
   
   
