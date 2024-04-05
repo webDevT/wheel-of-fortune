@@ -92,10 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const doneButton = document.getElementById("done"); // Get the DONE button
 
   doneButton.addEventListener('click', () => {
-    const prizeModal = document.getElementById("prize-modal"); // Make sure the ID of your modal window is "prize-modal"
-    prizeModal.style.display = "none"; // Hide the modal window
-    document.body.style.backgroundColor = ""; // Reset the body background color
-  });
+  const prizeModal = document.getElementById("prize-modal"); // Make sure the ID of your modal window is "prize-modal"
+  prizeModal.style.display = "none"; // Hide the modal window
+  document.body.style.backgroundColor = ""; // Reset the body background color
+  spinButton.disabled = true; // Make the PRESS HERE button disabled
+});
+
 
   const startSpin = () => {
     if (isSpinning) return;
