@@ -83,7 +83,7 @@
           </div>
 
           <div class="winner-name">
-            Анастасия
+            Анастасияаошгшщоршгр
           </div>
           </div>
 
@@ -643,6 +643,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   spinButton.addEventListener('click', startSpin);
+});
+
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    var winnerNameDiv = document.querySelector('.winner-name');
+    var nameText = winnerNameDiv.textContent.trim();
+
+    if (nameText.length > 11) {
+        winnerNameDiv.textContent = nameText.substring(0, 11) + '...';
+    }
 });
 
   </script>
