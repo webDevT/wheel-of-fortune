@@ -1,5 +1,5 @@
 let gulp = require('gulp'),
-	sass = require('gulp-sass')(require('sass'));
+	sass = require('gulp-sass')(require('sass')),
 	browserSync = require('browser-sync'),
 	uglify = require('gulp-uglify'),
 	concat = require('gulp-concat'),
@@ -7,29 +7,28 @@ let gulp = require('gulp'),
 	del = require('del'),
 	autoprefixer = require('gulp-autoprefixer');
 
-
 gulp.task('clean', async function(){
 	del.sync('docs')
 })
 
 gulp.task('sass', function(){
 	return gulp.src('app/sass/**/*.sass')
-		.pipe(sass({outputStyle: 'compressed'}))
+		.pipe(sass({outputStyle: 'expanded'}))
 		.pipe(autoprefixer({
 			overrideBrowserslist:  ['last 8 versions']
 		}))
+		
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest('app/css'))
 		.pipe(browserSync.reload({stream: true}))
 });
-
 
 gulp.task('css', function(){
 	return gulp.src([
 		'node_modules/normalize.css/normalize.css',
 		'node_modules/slick-carousel/slick/slick.css'
 		])
-	.pipe(sass({outputStyle: 'compressed'}))
+	// Удаляем этап минификации CSS
 	.pipe(concat('libs.css'))
 	.pipe(rename({suffix: '.min'}))
 	.pipe(gulp.dest('app/css'))
@@ -47,8 +46,6 @@ gulp.task('script', function(){
 	.pipe(browserSync.reload({stream: true}))
 
 });
-
-
 
 gulp.task('browser-sync', function() {
     browserSync.init({
@@ -84,4 +81,4 @@ gulp.task('watch', function(){
 
 gulp.task('build', gulp.series('clean', 'export'));
 
-gulp.task('default', gulp.parallel('css', 'sass', 'browser-sync', 'watch'))
+gulp.task('default', gulp.parallel('css', 'sass', 'browser-sync', 'watch'));

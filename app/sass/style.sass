@@ -67,8 +67,8 @@ h1
     overflow: hidden
 .wheel-container
     position: relative
-    width: 300px
-    height: 300px
+    width: 340px
+    height: 340px
     margin: 0 auto
 .wheel-wrap
     position: absolute
@@ -214,7 +214,7 @@ button:disabled
     display: block
 .prize-title
     text-align: center
-    margin-bottom: 20px
+    margin-bottom: 0px
     font-size: 28px
     font-weight: 800
     color: #b7b5b8
@@ -278,6 +278,29 @@ video
 .date-quantity
     text-align: right
 //end winners list style 
+.wheel svg
+    font-size: 18px
+    font-weight: 800 
+    text-transform: uppercase
+.wheel-container
+    position: relative
+    width: 340px
+    height: 340px
+    margin: 0 auto
+    border-radius: 50%
+    overflow: hidden
+.wheel svg
+    transform: rotate(-90deg)
+    width: 100%
+    height: 100%
+.wheel
+    position: relative
+    width: 100%
+    height: 100%
+    border-radius: 50%
+    transform-origin: center
+    transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1)
+text
 
 @import "media"
 
