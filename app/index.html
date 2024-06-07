@@ -565,44 +565,56 @@ document.addEventListener('DOMContentLoaded', () => {
       const x2 = centerX + radius * Math.cos(Math.PI * endAngle / 180);
       const y2 = centerY + radius * Math.sin(Math.PI * endAngle / 180);
 
+      // Creation of the main sector
       const path = document.createElementNS(svgNS, "path");
-      const d = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2} Z`;
+        const d = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2} Z`;
 
-      path.setAttribute("d", d);
-      path.setAttribute("fill", colors[i % colors.length]);
+        path.setAttribute("d", d);
+        path.setAttribute("fill", colors[i % colors.length]);
 
-      const borderPath = document.createElementNS(svgNS, "path");
-      const borderD = `M ${x1} ${y1} A ${borderRadius} ${borderRadius} 0 0 1 ${x2} ${y2}`;
-      borderPath.setAttribute("d", borderD);
-      borderPath.setAttribute("fill", "none");
-      borderPath.setAttribute("stroke", colors[i % colors.length]);
-      borderPath.setAttribute("stroke-opacity", "0.5");
-      borderPath.setAttribute("stroke-width", "10");
+        // Creating an outer sector border
+        const borderPath = document.createElementNS(svgNS, "path");
+        const borderD = `M ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2}`;
+        borderPath.setAttribute("d", borderD);
+        borderPath.setAttribute("fill", "none");
+        borderPath.setAttribute("stroke", colors[i % colors.length]);
+        borderPath.setAttribute("stroke-opacity", "0.5");
+        borderPath.setAttribute("stroke-width", "8"); // Увеличенная ширина внешней границы
 
-      const text = document.createElementNS(svgNS, "text");
-      const midAngle = startAngle + angleStep / 2;
-      const textX = centerX + radius * 0.6 * Math.cos(Math.PI * midAngle / 180); // Adjusted distance from center
-      const textY = centerY + radius * 0.6 * Math.sin(Math.PI * midAngle / 180); // Adjusted distance from center
-      text.setAttribute("x", textX);
-      text.setAttribute("y", textY);
-      text.setAttribute("dy", "0.35em");
-      text.setAttribute("text-anchor", "middle");
-      text.setAttribute("fill", darkenColor(colors[i % colors.length], 50));
-      text.setAttribute("transform", `rotate(${midAngle - 0} ${textX} ${textY})`);
-      text.textContent = texts[i % texts.length];
+        // Creating an internal border between sectors
+        const innerBorderPath = document.createElementNS(svgNS, "line");
+        innerBorderPath.setAttribute("x1", centerX);
+        innerBorderPath.setAttribute("y1", centerY);
+        innerBorderPath.setAttribute("x2", x1);
+        innerBorderPath.setAttribute("y2", y1);
+        innerBorderPath.setAttribute("stroke", "#FFFFFF");
+        innerBorderPath.setAttribute("stroke-width", "2");
 
-      svg.appendChild(path);
-      svg.appendChild(borderPath);
-      svg.appendChild(text);
-    }
+        // Creating text
+        const text = document.createElementNS(svgNS, "text");
+        const midAngle = startAngle + angleStep / 2;
+        const textX = centerX + radius * 0.6 * Math.cos(Math.PI * midAngle / 180);
+        const textY = centerY + radius * 0.6 * Math.sin(Math.PI * midAngle / 180);
+        text.setAttribute("x", textX);
+        text.setAttribute("y", textY);
+        text.setAttribute("dy", "0.35em");
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("fill", darkenColor(colors[i % colors.length], 50));
+        text.setAttribute("transform", `rotate(${midAngle - 0} ${textX} ${textY})`);
+        text.textContent = texts[i % texts.length];
 
-    wheel.appendChild(svg);
-    // Set initial position to sector 5
-    const initialRotationDegrees = (360 - (5 - 1) * (360 / sectorsCount)) - (360 / sectorsCount) / 2;
-    wheel.style.transform = `rotate(${initialRotationDegrees}deg)`;
-    prizeTitle.textContent = sectorTexts[4]; // Set initial value in prize-title
-  };
+        // Adding elements to SVG
+        svg.appendChild(path);
+        svg.appendChild(borderPath);
+        svg.appendChild(innerBorderPath);
+        svg.appendChild(text);
+      }
 
+      wheel.appendChild(svg);
+      const initialRotationDegrees = (360 - (5 - 1) * (360 / count)) - (360 / count) / 2;
+      wheel.style.transform = `rotate(${initialRotationDegrees}deg)`;
+      prizeTitle.textContent = texts[4];
+    };
   const startSpin = () => {
     if (isSpinning) return;
     isSpinning = true;
